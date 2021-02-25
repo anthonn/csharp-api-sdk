@@ -36,6 +36,8 @@ namespace Fortnox.SDK.Connectors.Base
             UseAuthHeaders = true;
         }
 
+        public static event Action<HttpRequestMessage> RequestPeekerEvent;
+
         public async Task<byte[]> SendAsync(HttpRequestMessage request)
         {
             try
@@ -48,6 +50,8 @@ namespace Fortnox.SDK.Connectors.Base
 
                 if (UseRateLimiter)
                     await Throttle();
+
+                RequestPeekerEvent?.Invoke(request);
 
                 using var response = await HttpClient.SendAsync(request).ConfigureAwait(false);
 
@@ -84,5 +88,6 @@ namespace Fortnox.SDK.Connectors.Base
                 return RateLimiters[accessToken];
             }
         }
+
     }
 }
